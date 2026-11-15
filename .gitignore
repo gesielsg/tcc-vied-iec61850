@@ -1,0 +1,13 @@
+# executáveis gerados na compilação
+mu1
+vied1
+VIED_Parametro
+*.o
+
+# Python
+__pycache__/
+*.pyc
+
+# pacotes e arquivos temporários
+*.zip
+*.swp
