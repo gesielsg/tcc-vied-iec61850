@@ -1,4 +1,4 @@
-# TCC - Funções de proteção 25, 27 e 81 em um IED virtual IEC 61850
+# TCC - Funções de proteção 25, 27, 59 e 81 em um IED virtual IEC 61850
 
 Código do meu TCC em Engenharia Elétrica na UFC. A base é a versão do vIED e da vMU disponível no repositório [matheusxd8147/VIED](https://github.com/matheusxd8147/VIED). Em cima dela fui acrescentando as funções de proteção.
 
