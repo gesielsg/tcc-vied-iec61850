@@ -5,7 +5,7 @@ Código do meu TCC em Engenharia Elétrica na UFC. A base é a versão do vIED e
 Cada etapa fica numa pasta própria:
 
 - `MU_27_59_81` e `VIED_27_59_81`: funções 27, 59 e 81
-- a função 25 vai entrar numa pasta nova quando estiver pronta
+- `MU_25`: vMU da função 25
 
 ## Compilar
 
