@@ -83,6 +83,9 @@ static float vol10, vol20, vol30;
 static float amp10, amp20, amp30;
 static float an[6], f;
 
+//Função 25
+static int id_mu = 1;
+
 static void
 waitUntilSample(struct timespec startTime, uint64_t sampleNumber)
 {
@@ -115,7 +118,10 @@ setupSVPublisher(const char *svInterface)
     if (svPublisher)
     {
 
-        asdu = SVPublisher_addASDU(svPublisher, "VMU01", NULL, 1);
+        if (id_mu == 2)
+            asdu = SVPublisher_addASDU(svPublisher, "VMU02", NULL, 1);
+        else
+            asdu = SVPublisher_addASDU(svPublisher, "VMU01", NULL, 1);
 
         amp1 = SVPublisher_ASDU_addINT32(asdu);
         amp1q = SVPublisher_ASDU_addQuality(asdu);
@@ -225,6 +231,14 @@ int main(int argc, char **argv)
 {
     char *svInterface;
 
+    //Função 25
+    FILE *fileId = fopen("ID_MU.txt", "r");
+    if (fileId != NULL) {
+        fscanf(fileId, "%d", &id_mu);
+        fclose(fileId);
+    }
+    printf("vMU: esta e a VMU0%d\n", id_mu);
+
     IedServerConfig config = IedServerConfig_create();
 
     iedServer = IedServer_createWithConfig(&iedModel, NULL, config);
@@ -260,7 +274,10 @@ int main(int argc, char **argv)
     IedServer_setGoCBHandler(iedServer, goCbEventHandler, NULL);
 
     /* MMS server will be instructed to start listening to client connections. */
-    IedServer_start(iedServer, 120);
+    if (id_mu == 2)
+        IedServer_start(iedServer, 121);
+    else
+        IedServer_start(iedServer, 120);
 
     if (!IedServer_isRunning(iedServer))
     {
