@@ -237,7 +237,7 @@ int main(int argc, char **argv)
         fscanf(fileId, "%d", &id_mu);
         fclose(fileId);
     }
-    printf("vMU: esta e a VMU0%d\n", id_mu);
+    printf("vMU: esta e a VMU0%d (%s)\n", id_mu, (id_mu == 2) ? "barra" : "linha");
 
     IedServerConfig config = IedServerConfig_create();
 
@@ -263,13 +263,15 @@ int main(int argc, char **argv)
         // IedServer_setGooseInterfaceIdEx(iedServer, IEDMODEL_CFG_LLN0, "BRep0201", ethernetIfcID);
     }
 
-    IedServer_enableGoosePublishing(iedServer);
+    if (id_mu != 2)
+        IedServer_enableGoosePublishing(iedServer);
     GooseReceiver receiver = GooseReceiver_create();
     GooseReceiver_setInterfaceId(receiver, "lo");
     GooseSubscriber subscriber = GooseSubscriber_create("VIED_21L1CFG/LLN0$GO$CONTROL_BK", NULL); // Especificação de quem o ied irá receber as mensagens goose
     GooseSubscriber_setListener(subscriber, gooseListener, iedServer);
     GooseReceiver_addSubscriber(receiver, subscriber);
-    GooseReceiver_start(receiver);
+    if (id_mu != 2)
+        GooseReceiver_start(receiver);
 
     IedServer_setGoCBHandler(iedServer, goCbEventHandler, NULL);
 
@@ -295,7 +297,8 @@ int main(int argc, char **argv)
     if (svPublisher)
     {
 
-        IedServer_enableGoosePublishing(iedServer);
+        if (id_mu != 2)
+            IedServer_enableGoosePublishing(iedServer);
 
         SVControlBlock *svcb = IedModel_getSVControlBlock(&iedModel, IEDMODEL_Mod3_MU2_LLN0, "MSVCB01");
 
