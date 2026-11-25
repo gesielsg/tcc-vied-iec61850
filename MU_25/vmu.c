@@ -366,6 +366,11 @@ int main(int argc, char **argv)
 
         uint64_t sampleNumber = 0;
 
+        struct timespec agora;
+        clock_gettime(CLOCK_REALTIME, &agora);
+        fase = 2 * M_PI * (fmod((double)f * (double)agora.tv_sec, 1.0) + (double)f * agora.tv_nsec * 1e-9);
+        fase = fmod(fase, 2 * M_PI);
+
         while (running)
         {
 
@@ -470,7 +475,7 @@ int main(int argc, char **argv)
                 SVPublisher_ASDU_setINT32(asdu, vol4, voltageN);
                 SVPublisher_ASDU_setQuality(asdu, vol4q, q);
 
-                SVPublisher_ASDU_setRefrTmNs(asdu, Hal_getTimeInNs());
+                SVPublisher_ASDU_setRefrTmNs(asdu, (uint64_t) agora.tv_sec * 1000000000ULL + agora.tv_nsec + sampleNumber * 625000ULL / 3);
 
                 SVPublisher_ASDU_setSmpCnt(asdu, (uint16_t)sampleCount);
 
