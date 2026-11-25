@@ -266,7 +266,7 @@ int main(int argc, char **argv)
     if (id_mu != 2)
         IedServer_enableGoosePublishing(iedServer);
     GooseReceiver receiver = GooseReceiver_create();
-    GooseReceiver_setInterfaceId(receiver, "lo");
+    GooseReceiver_setInterfaceId(receiver, (argc > 1) ? argv[1] : "lo");
     GooseSubscriber subscriber = GooseSubscriber_create("VIED_21L1CFG/LLN0$GO$CONTROL_BK", NULL); // Especificação de quem o ied irá receber as mensagens goose
     GooseSubscriber_setListener(subscriber, gooseListener, iedServer);
     GooseReceiver_addSubscriber(receiver, subscriber);
