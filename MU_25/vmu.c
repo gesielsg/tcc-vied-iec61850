@@ -85,6 +85,7 @@ static float an[6], f;
 
 //Função 25
 static int id_mu = 1;
+static bool disjuntor_aberto = false;
 
 static void
 waitUntilSample(struct timespec startTime, uint64_t sampleNumber)
@@ -185,6 +186,7 @@ gooseListener(GooseSubscriber subscriber, void *parameter)
 
     if (b == 116)
     {
+        disjuntor_aberto = false;
         IedServer_updateBooleanAttributeValue(iedServer, IEDMODEL_BinIO_BinaryInputs_LPDI3_In_stVal, true);
         FILE *file;
         file = fopen("AjustesMU.txt", "r");
@@ -206,6 +208,7 @@ gooseListener(GooseSubscriber subscriber, void *parameter)
 
     if (c == 116)
     {
+        disjuntor_aberto = true;
         IedServer_updateBooleanAttributeValue(iedServer, IEDMODEL_BinIO_BinaryInputs_LPDI3_In_stVal, false);
         amp10 = 0;
         amp20 = 0;
@@ -297,8 +300,10 @@ int main(int argc, char **argv)
     if (svPublisher)
     {
 
-        if (id_mu != 2)
+        if (id_mu != 2) {
+            IedServer_updateBooleanAttributeValue(iedServer, IEDMODEL_BinIO_BinaryInputs_LPDI3_In_stVal, true);
             IedServer_enableGoosePublishing(iedServer);
+        }
 
         SVControlBlock *svcb = IedModel_getSVControlBlock(&iedModel, IEDMODEL_Mod3_MU2_LLN0, "MSVCB01");
 
@@ -379,7 +384,7 @@ int main(int argc, char **argv)
                     ((info.st_mtime != dataAjustes) || (info.st_mtim.tv_nsec != dataAjustesNs))) {
                     dataAjustes = info.st_mtime;
                     dataAjustesNs = info.st_mtim.tv_nsec;
-                    file = fopen("AjustesMU.txt", "r");
+                    file = (disjuntor_aberto == false) ? fopen("AjustesMU.txt", "r") : NULL;
                     if (file != NULL) {
                         fscanf(file, "%f\n", &amp10);
                         fscanf(file, "%f\n", &an[0]);
