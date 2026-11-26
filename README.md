@@ -6,6 +6,7 @@ Cada etapa fica numa pasta própria:
 
 - `MU_27_59_81` e `VIED_27_59_81`: funções 27, 59 e 81
 - `MU_25`: vMU da função 25. Dá para rodar duas cópias ao mesmo tempo, uma para a linha (`VMU01`) e outra para a barra (`VMU02`), escolhendo qual é qual no arquivo `ID_MU.txt`
+- `VIED_25`: vIED com a função 25, que recebe as duas vMUs e compara tensão, frequência e ângulo da linha com os da barra. Os ajustes ficam em `Ajustes_25.txt`
 
 ## Compilar
 
