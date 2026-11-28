@@ -5,7 +5,7 @@ Código do meu TCC em Engenharia Elétrica na UFC. A base é a versão do vIED e
 Cada etapa fica numa pasta própria:
 
 - `MU_27_59_81` e `VIED_27_59_81`: funções 27, 59 e 81
-- `MU_25`: vMU da função 25. Dá para rodar duas cópias ao mesmo tempo, uma para a linha (`VMU01`) e outra para a barra (`VMU02`), escolhendo qual é qual no arquivo `ID_MU.txt`
+- `MU_25`: vMU da função 25. Dá para rodar várias cópias ao mesmo tempo (até 5). O número de cada uma fica no arquivo `ID_MU.txt`: a 1 é a da linha (`VMU01`) e a 2 é a da barra (`VMU02`), que não tem disjuntor
 - `VIED_25`: vIED com a função 25, que recebe as duas vMUs e compara tensão, frequência e ângulo da linha com os da barra. Os ajustes ficam em `Ajustes_25.txt`
 
 ## Compilar
