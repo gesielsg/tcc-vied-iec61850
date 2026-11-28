@@ -342,6 +342,7 @@ int main(int argc, char **argv)
         fscanf(file, "%f\n", &f);
         fclose(file);
 
+        float *ajustes[13] = {&amp10, &an[0], &amp20, &an[1], &amp30, &an[2], &vol10, &an[3], &vol20, &an[4], &vol30, &an[5], &f};
         struct stat info;
         stat("AjustesMU.txt", &info);
         time_t dataAjustes = info.st_mtime;
@@ -390,19 +391,8 @@ int main(int argc, char **argv)
                     dataAjustesNs = info.st_mtim.tv_nsec;
                     file = (disjuntor_aberto == false) ? fopen("AjustesMU.txt", "r") : NULL;
                     if (file != NULL) {
-                        fscanf(file, "%f\n", &amp10);
-                        fscanf(file, "%f\n", &an[0]);
-                        fscanf(file, "%f\n", &amp20);
-                        fscanf(file, "%f\n", &an[1]);
-                        fscanf(file, "%f\n", &amp30);
-                        fscanf(file, "%f\n", &an[2]);
-                        fscanf(file, "%f\n", &vol10);
-                        fscanf(file, "%f\n", &an[3]);
-                        fscanf(file, "%f\n", &vol20);
-                        fscanf(file, "%f\n", &an[4]);
-                        fscanf(file, "%f\n", &vol30);
-                        fscanf(file, "%f\n", &an[5]);
-                        fscanf(file, "%f\n", &f);
+                        for (int k = 0; k < 13; k++)
+                            fscanf(file, "%f\n", ajustes[k]);
                         fclose(file);
                         printf("vMU: AjustesMU.txt relido: f = %.3f Hz | Va = %.1f V | Vb = %.1f V | Vc = %.1f V\n",
                                f, vol10, vol20, vol30);
