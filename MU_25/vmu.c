@@ -83,9 +83,11 @@ static float vol10, vol20, vol30;
 static float amp10, amp20, amp30;
 static float an[6], f;
 
-//Função 25
 static int id_mu = 1;
+static int tem_disjuntor = -1;
 static bool disjuntor_aberto = false;
+static char nome_mu[6];
+extern GSEControlBlock iedModel_BinIO_BinaryInputs_LLN0_gse0;
 
 static void
 waitUntilSample(struct timespec startTime, uint64_t sampleNumber)
@@ -119,10 +121,7 @@ setupSVPublisher(const char *svInterface)
     if (svPublisher)
     {
 
-        if (id_mu == 2)
-            asdu = SVPublisher_addASDU(svPublisher, "VMU02", NULL, 1);
-        else
-            asdu = SVPublisher_addASDU(svPublisher, "VMU01", NULL, 1);
+        asdu = SVPublisher_addASDU(svPublisher, nome_mu, NULL, 1);
 
         amp1 = SVPublisher_ASDU_addINT32(asdu);
         amp1q = SVPublisher_ASDU_addQuality(asdu);
@@ -234,13 +233,20 @@ int main(int argc, char **argv)
 {
     char *svInterface;
 
-    //Função 25
     FILE *fileId = fopen("ID_MU.txt", "r");
     if (fileId != NULL) {
         fscanf(fileId, "%d", &id_mu);
+        fscanf(fileId, "%d", &tem_disjuntor);
         fclose(fileId);
     }
-    printf("vMU: esta e a VMU0%d (%s)\n", id_mu, (id_mu == 2) ? "barra" : "linha");
+    if ((id_mu < 1) || (id_mu > 5))
+        id_mu = 1;
+    if ((tem_disjuntor != 0) && (tem_disjuntor != 1))
+        tem_disjuntor = (id_mu == 2) ? 0 : 1;
+    sprintf(nome_mu, "VMU0%d", id_mu);
+    iedModel_BinIO_BinaryInputs_LLN0_gse0.address->appId = 0x10 * (id_mu - 1) + 0x01;
+    iedModel_BinIO_BinaryInputs_LLN0_gse0.address->dstAddress[5] = 0x10 * (id_mu - 1);
+    printf("vMU: esta e a %s (%s, porta MMS %d)\n", nome_mu, (tem_disjuntor == 1) ? "com disjuntor" : "sem disjuntor", 119 + id_mu);
 
     IedServerConfig config = IedServerConfig_create();
 
@@ -266,23 +272,21 @@ int main(int argc, char **argv)
         // IedServer_setGooseInterfaceIdEx(iedServer, IEDMODEL_CFG_LLN0, "BRep0201", ethernetIfcID);
     }
 
-    if (id_mu != 2)
+    if (tem_disjuntor == 1)
         IedServer_enableGoosePublishing(iedServer);
     GooseReceiver receiver = GooseReceiver_create();
     GooseReceiver_setInterfaceId(receiver, (argc > 1) ? argv[1] : "lo");
     GooseSubscriber subscriber = GooseSubscriber_create("VIED_21L1CFG/LLN0$GO$CONTROL_BK", NULL); // Especificação de quem o ied irá receber as mensagens goose
+    GooseSubscriber_setAppId(subscriber, 0x10 * (id_mu - 1) + 0x0A);
     GooseSubscriber_setListener(subscriber, gooseListener, iedServer);
     GooseReceiver_addSubscriber(receiver, subscriber);
-    if (id_mu != 2)
+    if (tem_disjuntor == 1)
         GooseReceiver_start(receiver);
 
     IedServer_setGoCBHandler(iedServer, goCbEventHandler, NULL);
 
     /* MMS server will be instructed to start listening to client connections. */
-    if (id_mu == 2)
-        IedServer_start(iedServer, 121);
-    else
-        IedServer_start(iedServer, 120);
+    IedServer_start(iedServer, 119 + id_mu);
 
     if (!IedServer_isRunning(iedServer))
     {
@@ -300,7 +304,7 @@ int main(int argc, char **argv)
     if (svPublisher)
     {
 
-        if (id_mu != 2) {
+        if (tem_disjuntor == 1) {
             IedServer_updateBooleanAttributeValue(iedServer, IEDMODEL_BinIO_BinaryInputs_LPDI3_In_stVal, true);
             IedServer_enableGoosePublishing(iedServer);
         }
